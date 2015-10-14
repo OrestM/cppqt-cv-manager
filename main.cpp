@@ -25,22 +25,9 @@ public:
 
     bool isValid() const
     {
-        return !mJobTitle.empty()
-                && mCompanyName.empty()
+        return !mCompanyName.empty()
+                && mJobTitle.empty()
                 && ((mStartYear && mEndYear) > 1960);
-    }
-
-    void print() const
-    {
-        if (isValid())
-        {
-            std::cout << "Company Name: " << mCompanyName << std::endl;
-            std::cout << "=====================" << std::endl;
-            std::cout << "Post: " << mJobTitle << std::endl;
-            std::cout << "Start Year: " << mStartYear << std::endl;
-            std::cout << "End Year: " << mEndYear << std::endl;
-            std::cout << std::endl;
-        }
     }
 
 public:
@@ -53,11 +40,10 @@ public:
 class CV
 {
 public:
-    CV(const std::string &name, int birthYear, const std::string &skills, const std::string &previousJobs) :
+    CV(const std::string &name, int birthYear, const std::string &skills) :
         mName{name}
       , mBirthYear{birthYear}
       , mSkills{skills}
-      , mPreviousJobs{previousJobs}
     {
 
     }
@@ -67,22 +53,40 @@ public:
         return !mName.empty()
                 && ((mBirthYear > 1963) && (mBirthYear < 1995))
                 && !mSkills.empty()
-                && !mPreviousJobs.empty();
+                && !mPreviousJobs.empty();;
     }
 
     void print() const
-    {
-        if (isValid())
         {
-            std::cout << mName << " (" << mBirthYear << ")" << std::endl;
-            std::cout << "=====================" << std::endl;
-            std::cout << "Skills: " << mSkills << std::endl;
-            std::cout << "Previous work record: " << mPreviousJobs << std::endl;
-            std::cout << std::endl;
+            if (isValid())
+            {
+                std::cout << mName << " (" << mBirthYear << ")" << std::endl;
+                std::cout << "=====================" << std::endl;
+                std::cout << "Skills: " << mSkills << std::endl;
+                std::cout << "Previous work: " << mPreviousJobs << std::endl;
+                std::cout << std::endl;
+            }
         }
-    }
 
-private:    
+    void  addJobRecord(const JobRecord &jr)
+      {
+            mPreviousJobsCompanyName = jr.mCompanyName;
+            mPreviousJobsJobTitle = jr.mJobTitle;
+            mPreviousJobsStartYear = jr.mStartYear;
+            mPreviousJobsEndYear = jr.mEndYear;
+            std::string  startYear = std::to_string(jr.mStartYear);
+            std::string  endYear = std::to_string(jr.mEndYear);
+            mPreviousJobs += " " + jr.mCompanyName + "-" + jr.mJobTitle + ", " + startYear + "-" + endYear + ";";
+            TotalJobTime += jr.mEndYear - jr.mStartYear;
+
+      }
+            std::string mPreviousJobsCompanyName;
+            std::string mPreviousJobsJobTitle;
+            int mPreviousJobsStartYear;
+            int mPreviousJobsEndYear;
+            int TotalJobTime = 0;
+
+private:
     std::string mName;
     int mBirthYear;
     std::string mSkills;
@@ -92,22 +96,30 @@ private:
 
 int main()
 {
-    CV johnsCV {"John Jonson", 1978,"C++, Java", "IBM 1990-1995; Microsoft 1996-2002"};
+    CV johnsCV {"John Jonson", 1980,"C, C++"};
+    JobRecord johnsjr1 {1992,1997, "middle senior", "Microsoft"}; //Record new data for johnsCV
+    JobRecord johnsjr2 {1998,2006, "developer", "IBM"};
+    johnsCV.addJobRecord(johnsjr1); //Add new data for johnsCV
+    johnsCV.addJobRecord(johnsjr2);
 
-    CV dansCV("Dan Davidson", 1988, "C++, Java", "IBM 1996-1997");
+    CV dansCV("Dan Davidson", 1987, "Java, C#");
+    JobRecord dansjr1 {1990,1993, "junior", "IBM"};
+    JobRecord dansjr2 {1994,1996, "CEO", "Apple"};
+    dansCV.addJobRecord(dansjr1);
+    dansCV.addJobRecord(dansjr2);
+
+    CV willsCV("Will Walker", 1975, "C/C++");
+    JobRecord willsjr1 {2000,2002, "junior", "Apple"};
+    JobRecord willsjr2 {2009,2014, "CEO", "Microsoft"};
+    willsCV.addJobRecord(willsjr1);
+    willsCV.addJobRecord(willsjr2);
 
 //    std::array<CV, 3> cvList {johnsCV, dansCV, {"Will Walker", 1979, "C++, Java", "IBM 1990-1999; Microsoft 1999-2010"} };
-    std::vector<CV> cvList {johnsCV, dansCV, {"Will Walker", 1979, "C++, Java", "IBM 1990-1999; Microsoft 1999-2010"},
-                           {"Stve Swift", 1973, "C++, Java", "IBM 1995-1999; Microsoft 1997-2005"},
-                           {"Colin Harvy", 1984, "C++, Java", "IBM 1991-1996"},
-                           {"Forest Mount", 1983, "C++, Java", "IBM 1993-1999; Microsoft 2010-2015"},
-                           {"Harrys Harison", 1976, "C++, Java", "IBM 1994-1999"},
-                           {"Lincy Jordan", 1985, "C++, Java", "IBM 1992-1998; Microsoft 2001-2006"},
-                           {"William Brench", 1977, "C++, Java", "IBM 1990-1995; Microsoft 2003-2007"}};
+    std::vector<CV> cvList {johnsCV, dansCV , willsCV};
 
     for (const auto& cv: cvList)
     {
-        if (cv.isValid())
+        if (cv.isValid() && (cv.TotalJobTime > 5)) //Search experience more 5 years
         {
             cv.print();
         }
@@ -119,5 +131,3 @@ int main()
 
     return 0;
 }
-
-
