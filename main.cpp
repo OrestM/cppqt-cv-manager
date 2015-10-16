@@ -24,7 +24,7 @@ int main()
 
     for (const auto& cv: cvList)
     {
-        if (cv.isValid() && (cv.TotalJobTime >= 5)) //Search experience more 5 years
+        if (cv.isValid() && (cv.TotalJobTime >= 5)) //Search experience 5 or more years
         {
             cv.print();
         }
